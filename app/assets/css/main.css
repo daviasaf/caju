@@ -1,0 +1,139 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+:root {
+  --caju-yellow: #ffc928;
+  --caju-blue: #028ce8;
+  --caju-jeans: #385a6f;
+  --caju-red: #d71920;
+  --caju-olive: #6d7a3b;
+  --caju-sand: #ead8a6;
+  --caju-off: #fff8e7;
+  --caju-cream: #f8f3e7;
+  --caju-ink: #172026;
+  --caju-charcoal: #263039;
+  --caju-muted: #66717a;
+  --caju-surface: #fffdf7;
+  --caju-border: rgba(23, 32, 38, .14);
+  --caju-orange: #f47c20;
+}
+
+* { box-sizing: border-box; }
+
+[class*="tracking-"] {
+  letter-spacing: 0 !important;
+}
+
+html {
+  color-scheme: light;
+  scroll-behavior: auto;
+}
+
+body {
+  margin: 0;
+  color: var(--caju-ink);
+  background: #fffaf3;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+
+.page-shell {
+  width: min(1180px, calc(100% - 2rem));
+  margin-inline: auto;
+}
+
+.caju-title {
+  font-weight: 950;
+  letter-spacing: 0;
+  line-height: .96;
+}
+
+.caju-kicker {
+  font-size: .75rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: rgba(23, 32, 38, .54);
+}
+
+.caju-card {
+  border: 1px solid var(--caju-border);
+  background: #ffffff;
+}
+
+.caju-glass {
+  border: 1px solid var(--caju-border);
+  background: #ffffff;
+}
+
+.caju-stamp {
+  border: 1px solid var(--caju-border);
+  background: #ffffff;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.admin-bg {
+  min-height: 100vh;
+  background: #fffaf0;
+}
+
+.caju-button {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  border-radius: .75rem;
+  border: 1px solid transparent;
+  padding: .62rem 1rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.caju-button-primary {
+  background: var(--caju-yellow);
+  color: var(--caju-ink);
+}
+
+.caju-button-outline {
+  border-color: var(--caju-border);
+  background: #ffffff;
+  color: var(--caju-ink);
+}
+
+.caju-field :where([data-slot="root"]:has(input), [data-slot="root"]:has(textarea), [data-slot="base"][role="combobox"]) {
+  width: 100%;
+}
+
+.admin-bg :where([data-slot="root"]:has(input), [data-slot="root"]:has(textarea), [data-slot="base"][role="combobox"]) {
+  width: 100%;
+}
+
+.admin-bg :where(textarea[data-slot="base"], input[data-slot="base"]) {
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .page-shell {
+    width: min(100% - 1rem, 1180px);
+  }
+
+  .caju-title {
+    line-height: 1;
+  }
+
+  .caju-button {
+    min-height: 2.25rem;
+    border-radius: .625rem;
+    padding: .5rem .75rem;
+    font-size: .875rem;
+  }
+}

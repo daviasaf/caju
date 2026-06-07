@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id               String         @id @default(cuid())
+  name             String
+  slug             String         @unique
+  shortDescription String?
+  description      String?
+  price            Decimal        @db.Decimal(10, 2)
+  promotionalPrice Decimal?       @db.Decimal(10, 2)
+  images           ProductImage[]
+  categoryId       String?
+  category         Category?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  collectionId     String?
+  collection       Collection?    @relation(fields: [collectionId], references: [id], onDelete: SetNull)
+  sizes            String[]
+  colors           String[]
+  materials        String[]
+  tags             String[]
+  active           Boolean        @default(true)
+  featured         Boolean        @default(false)
+  stock            Int?
+  order            Int            @default(0)
+  seoTitle         String?
+  seoDescription   String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@index([active, featured])
+  @@index([categoryId])
+  @@index([collectionId])
+}
+
+model ProductImage {
+  id        String   @id @default(cuid())
+  url       String
+  alt       String?
+  order     Int      @default(0)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  color       String?
+  icon        String?
+  active      Boolean   @default(true)
+  order       Int       @default(0)
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Collection {
+  id             String    @id @default(cuid())
+  name           String
+  slug           String    @unique
+  description    String?
+  image          String?
+  highlightColor String?
+  active         Boolean   @default(true)
+  featured       Boolean   @default(false)
+  order          Int       @default(0)
+  products       Product[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model StoreSettings {
+  id                   String   @id @default("settings_default")
+  storeName            String   @default("CAJU")
+  whatsappNumber       String
+  instagram            String?
+  city                 String?
+  state                String?
+  heroTitle            String?
+  heroSubtitle         String?
+  heroImage            String?
+  featuredProductId    String?
+  featuredCollectionId String?
+  paymentText          String?
+  shippingText         String?
+  seoTitle             String?
+  seoDescription       String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model AdminLog {
+  id        String   @id @default(cuid())
+  action    String
+  entity    String
+  title     String
+  detail    String?
+  createdAt DateTime @default(now())
+
+  @@index([entity])
+  @@index([createdAt])
+}

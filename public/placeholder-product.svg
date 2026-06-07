@@ -1,0 +1,10 @@
+<svg width="800" height="1000" viewBox="0 0 800 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="1000" fill="#FFF8E7"/>
+  <circle cx="400" cy="390" r="180" fill="#FFC928"/>
+  <path d="M310 455C340 505 460 505 490 455" stroke="#101820" stroke-width="28" stroke-linecap="round"/>
+  <circle cx="340" cy="350" r="22" fill="#101820"/>
+  <circle cx="460" cy="350" r="22" fill="#101820"/>
+  <path d="M520 250C565 215 612 221 650 265C594 269 552 290 520 250Z" fill="#6D7A3B"/>
+  <text x="400" y="700" text-anchor="middle" font-family="Arial, sans-serif" font-size="72" font-weight="900" fill="#101820">CAJU</text>
+  <text x="400" y="760" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#385A6F">imagem em breve</text>
+</svg>
