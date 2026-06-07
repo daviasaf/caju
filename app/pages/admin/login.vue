@@ -39,7 +39,7 @@ async function submit() {
 
       <UForm :schema="loginSchema" :state="state" class="space-y-4" @submit="submit">
         <UFormField label="Senha do admin" name="password">
-          <UInput v-model="state.password" type="password" size="lg" placeholder="ADMIN_PASSWORD" />
+          <UInput v-model="state.password" type="password" size="lg" placeholder="Digite sua senha" />
         </UFormField>
         <UButton type="submit" block size="lg" :loading="loading" icon="i-lucide-lock-keyhole">
           Entrar

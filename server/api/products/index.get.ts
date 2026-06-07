@@ -6,7 +6,20 @@ export default defineEventHandler(async (event) => {
   const and: any[] = [{ active: true }]
   if (q.search) {
     const search = String(q.search)
-    and.push({ OR: [{ name: { contains: search, mode: 'insensitive' } }, { shortDescription: { contains: search, mode: 'insensitive' } }] })
+    and.push({
+      OR: [
+        { name: { contains: search, mode: 'insensitive' } },
+        { shortDescription: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+        { category: { name: { contains: search, mode: 'insensitive' } } },
+        { category: { slug: { contains: search, mode: 'insensitive' } } },
+        { collection: { name: { contains: search, mode: 'insensitive' } } },
+        { collection: { slug: { contains: search, mode: 'insensitive' } } },
+        { tags: { has: search } },
+        { colors: { has: search } },
+        { materials: { has: search } }
+      ]
+    })
   }
   if (q.product) and.push({ slug: String(q.product) })
   if (q.category) and.push({ category: { slug: String(q.category) } })

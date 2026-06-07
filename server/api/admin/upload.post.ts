@@ -38,21 +38,26 @@ export default defineEventHandler(async (event) => {
   const uploadProvider = config.uploadProvider === 'blob' ? 'vercel-blob' : config.uploadProvider
 
   if (uploadProvider === 'vercel-blob') {
-    if (!config.blobReadWriteToken) {
+    try {
+      const blob = await put(filename, optimized, {
+        access: 'public',
+        contentType: 'image/webp',
+        cacheControlMaxAge: 60 * 60 * 24 * 365,
+        ...(config.blobReadWriteToken ? { token: config.blobReadWriteToken } : {})
+      })
+
+      return { url: blob.url }
+    } catch (err: any) {
       throw createError({
         statusCode: 500,
-        statusMessage: 'BLOB_READ_WRITE_TOKEN nao configurado. BLOB_STORE_ID e BLOB_WEBHOOK_PUBLIC_KEY nao substituem o token de escrita.'
+        statusMessage: 'Erro ao salvar imagem no Blob. Confira se o Blob Store esta conectado ao projeto na Vercel.',
+        data: {
+          message: err?.message
+            ? `Erro ao salvar imagem no Blob: ${err.message}`
+            : 'Erro ao salvar imagem no Blob. Confira se o Blob Store esta conectado ao projeto na Vercel.'
+        }
       })
     }
-
-    const blob = await put(filename, optimized, {
-      access: 'public',
-      contentType: 'image/webp',
-      cacheControlMaxAge: 60 * 60 * 24 * 365,
-      token: config.blobReadWriteToken
-    })
-
-    return { url: blob.url }
   }
 
   if (uploadProvider !== 'local') {

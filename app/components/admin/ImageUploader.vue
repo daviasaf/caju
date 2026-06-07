@@ -24,7 +24,7 @@ async function onFileChange(event: Event) {
     model.value = [...model.value, result.url]
     toast.add({ title: 'Imagem enviada', description: 'Arquivo otimizado em WebP.', color: 'success' })
   } catch (err: any) {
-    error.value = err?.data?.message || err?.statusMessage || 'Não foi possível enviar a imagem.'
+    error.value = err?.data?.message || err?.data?.statusMessage || err?.statusMessage || err?.message || 'Não foi possível enviar a imagem.'
     toast.add({ title: 'Erro no upload', description: error.value, color: 'error' })
   } finally {
     uploading.value = false

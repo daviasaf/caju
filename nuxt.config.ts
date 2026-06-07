@@ -1,8 +1,4 @@
-const hasBlobEnvironment = Boolean(
-  process.env.BLOB_READ_WRITE_TOKEN
-  || process.env.BLOB_STORE_ID
-  || process.env.BLOB_WEBHOOK_PUBLIC_KEY
-)
+const hasBlobEnvironment = Boolean(process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID)
 
 export default defineNuxtConfig({
   modules: ['@nuxt/ui', '@vueuse/nuxt', '@nuxt/eslint'],

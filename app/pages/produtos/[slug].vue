@@ -97,11 +97,11 @@ useSeoMeta({
 
     <div class="grid items-stretch gap-5 lg:grid-cols-[minmax(0,560px)_minmax(360px,1fr)] lg:gap-6">
       <section class="space-y-3">
-        <div class="caju-card grid h-[260px] place-items-center overflow-hidden rounded-xl p-2 sm:h-[420px] lg:h-[560px]">
+        <div class="caju-card overflow-hidden rounded-xl p-2">
           <img
             :src="selectedImage"
             :alt="product.name"
-            class="h-full w-full rounded-lg bg-white object-contain"
+            class="h-auto w-full rounded-lg bg-white object-contain"
             @error="useFallbackImage"
           >
         </div>

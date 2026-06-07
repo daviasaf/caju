@@ -116,11 +116,11 @@ Na Vercel, crie/configure um Blob Store e adicione:
 ```env
 UPLOAD_PROVIDER="vercel-blob"
 BLOB_STORE_ID="id-do-store"
-BLOB_READ_WRITE_TOKEN="token-da-vercel"
+BLOB_READ_WRITE_TOKEN="opcional-quando-usar-store-antigo-com-token"
 BLOB_WEBHOOK_PUBLIC_KEY="chave-publica-do-webhook-se-houver"
 ```
 
-A API sempre retorna a URL publica da imagem em WebP. Se `UPLOAD_PROVIDER` nao for definido, o projeto usa Blob automaticamente quando encontrar alguma variavel `BLOB_*`. Para salvar arquivos no Blob, o token `BLOB_READ_WRITE_TOKEN` tambem precisa existir; `BLOB_STORE_ID` e `BLOB_WEBHOOK_PUBLIC_KEY` nao dao permissao de escrita.
+A API sempre retorna a URL publica da imagem em WebP. Se `UPLOAD_PROVIDER` nao for definido, o projeto usa Blob automaticamente quando encontrar `BLOB_READ_WRITE_TOKEN` ou `BLOB_STORE_ID`. Stores novos da Vercel podem autenticar por OIDC sem token longo; nesse caso, mantenha o Blob Store conectado ao projeto e nao precisa criar `BLOB_READ_WRITE_TOKEN`. Em stores antigos, use `BLOB_READ_WRITE_TOKEN`.
 
 ## Rodando localmente
 
@@ -162,7 +162,7 @@ Checklist:
 - Configurar `NUXT_PUBLIC_SITE_URL` com a URL final.
 - Configurar `UPLOAD_PROVIDER="vercel-blob"`.
 - Configurar `BLOB_STORE_ID`.
-- Configurar `BLOB_READ_WRITE_TOKEN`.
+- Configurar `BLOB_READ_WRITE_TOKEN` apenas se o Blob Store antigo gerar token read-write.
 - Configurar `BLOB_WEBHOOK_PUBLIC_KEY` quando o store gerar webhook.
 - Rodar `pnpm prisma:generate` no build.
 
