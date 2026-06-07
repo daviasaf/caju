@@ -7,6 +7,35 @@ import { requireAdminSession } from '../../utils/auth'
 
 const ALLOWED = ['image/jpeg', 'image/png', 'image/webp']
 const MAX_SIZE = 5 * 1024 * 1024
+type BlobAccess = 'public' | 'private'
+
+function getBlobPathname(blob: { pathname?: string, url: string }) {
+  if (blob.pathname) return blob.pathname
+
+  try {
+    return new URL(blob.url).pathname.replace(/^\/+/, '')
+  } catch {
+    return ''
+  }
+}
+
+function getImageUrl(blob: { pathname?: string, url: string }, access: BlobAccess) {
+  if (access === 'private') {
+    const pathname = getBlobPathname(blob)
+    return `/api/blob?pathname=${encodeURIComponent(pathname)}`
+  }
+
+  return blob.url
+}
+
+function getBlobOptions(config: ReturnType<typeof useRuntimeConfig>) {
+  return {
+    contentType: 'image/webp',
+    cacheControlMaxAge: 60 * 60 * 24 * 365,
+    ...(config.blobReadWriteToken ? { token: config.blobReadWriteToken } : {}),
+    ...(config.blobStoreId ? { storeId: config.blobStoreId } : {})
+  }
+}
 
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
@@ -38,15 +67,25 @@ export default defineEventHandler(async (event) => {
   const uploadProvider = config.uploadProvider === 'blob' ? 'vercel-blob' : config.uploadProvider
 
   if (uploadProvider === 'vercel-blob') {
-    try {
-      const blob = await put(filename, optimized, {
-        access: 'public',
-        contentType: 'image/webp',
-        cacheControlMaxAge: 60 * 60 * 24 * 365,
-        ...(config.blobReadWriteToken ? { token: config.blobReadWriteToken } : {})
-      })
+    const preferredAccess: BlobAccess = config.blobAccess === 'private' ? 'private' : 'public'
+    const accessAttempts: BlobAccess[] = preferredAccess === 'private' ? ['private'] : ['public', 'private']
+    let lastError: any
 
-      return { url: blob.url }
+    for (const access of accessAttempts) {
+      try {
+        const blob = await put(filename, optimized, {
+          access,
+          ...getBlobOptions(config)
+        })
+
+        return { url: getImageUrl(blob, access) }
+      } catch (err: any) {
+        lastError = err
+      }
+    }
+
+    try {
+      throw lastError
     } catch (err: any) {
       throw createError({
         statusCode: 500,

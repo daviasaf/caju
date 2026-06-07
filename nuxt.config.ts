@@ -17,6 +17,7 @@ export default defineNuxtConfig({
     adminPassword: process.env.ADMIN_PASSWORD,
     sessionSecret: process.env.SESSION_SECRET || process.env.ADMIN_PASSWORD || 'dev-caju-secret',
     uploadProvider: process.env.UPLOAD_PROVIDER || (hasBlobEnvironment ? 'vercel-blob' : 'local'),
+    blobAccess: process.env.BLOB_ACCESS || 'public',
     blobReadWriteToken: process.env.BLOB_READ_WRITE_TOKEN,
     blobStoreId: process.env.BLOB_STORE_ID,
     blobWebhookPublicKey: process.env.BLOB_WEBHOOK_PUBLIC_KEY,

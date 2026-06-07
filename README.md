@@ -68,6 +68,7 @@ NUXT_PUBLIC_SITE_NAME="CAJU"
 NUXT_PUBLIC_SITE_URL="http://localhost:3000"
 
 UPLOAD_PROVIDER="local"
+BLOB_ACCESS="public"
 BLOB_STORE_ID=""
 BLOB_READ_WRITE_TOKEN=""
 BLOB_WEBHOOK_PUBLIC_KEY=""
@@ -115,12 +116,15 @@ Na Vercel, crie/configure um Blob Store e adicione:
 
 ```env
 UPLOAD_PROVIDER="vercel-blob"
+BLOB_ACCESS="public"
 BLOB_STORE_ID="id-do-store"
 BLOB_READ_WRITE_TOKEN="opcional-quando-usar-store-antigo-com-token"
 BLOB_WEBHOOK_PUBLIC_KEY="chave-publica-do-webhook-se-houver"
 ```
 
-A API sempre retorna a URL publica da imagem em WebP. Se `UPLOAD_PROVIDER` nao for definido, o projeto usa Blob automaticamente quando encontrar `BLOB_READ_WRITE_TOKEN` ou `BLOB_STORE_ID`. Stores novos da Vercel podem autenticar por OIDC sem token longo; nesse caso, mantenha o Blob Store conectado ao projeto e nao precisa criar `BLOB_READ_WRITE_TOKEN`. Em stores antigos, use `BLOB_READ_WRITE_TOKEN`.
+A API sempre retorna um caminho utilizavel da imagem em WebP. Para loja publica, prefira criar o Blob Store como `Public` e manter `BLOB_ACCESS="public"`. Se o Store ja foi criado como `Private`, use `BLOB_ACCESS="private"` ou deixe o sistema tentar esse modo automaticamente; nesse caso as imagens passam por `/api/blob`.
+
+Se `UPLOAD_PROVIDER` nao for definido, o projeto usa Blob automaticamente quando encontrar `BLOB_READ_WRITE_TOKEN` ou `BLOB_STORE_ID`. Stores novos da Vercel podem autenticar por OIDC sem token longo; nesse caso, mantenha o Blob Store conectado ao projeto e nao precisa criar `BLOB_READ_WRITE_TOKEN`. Em stores antigos, use `BLOB_READ_WRITE_TOKEN`.
 
 ## Rodando localmente
 
@@ -161,6 +165,7 @@ Checklist:
 - Configurar `SESSION_SECRET` com 32 caracteres ou mais.
 - Configurar `NUXT_PUBLIC_SITE_URL` com a URL final.
 - Configurar `UPLOAD_PROVIDER="vercel-blob"`.
+- Configurar `BLOB_ACCESS="public"` para Store publico ou `"private"` para Store privado.
 - Configurar `BLOB_STORE_ID`.
 - Configurar `BLOB_READ_WRITE_TOKEN` apenas se o Blob Store antigo gerar token read-write.
 - Configurar `BLOB_WEBHOOK_PUBLIC_KEY` quando o store gerar webhook.
