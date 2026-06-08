@@ -1,4 +1,4 @@
-export interface ProductImageDTO { id?: string; url: string; alt?: string | null; order?: number }
+export interface ProductImageDTO { id?: string; url: string; alt?: string | null; color?: string | null; order?: number }
 export interface CategoryDTO { id: string; name: string; slug: string; description?: string | null; color?: string | null; icon?: string | null; active: boolean; order: number }
 export interface CollectionDTO { id: string; name: string; slug: string; description?: string | null; image?: string | null; highlightColor?: string | null; active: boolean; featured: boolean; order: number }
 export interface ProductDTO {

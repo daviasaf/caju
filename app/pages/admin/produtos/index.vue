@@ -11,6 +11,7 @@ const search = ref('')
 const status = ref<'todos' | 'ativos' | 'inativos'>('todos')
 const deleting = ref<ProductDTO | null>(null)
 const loadingDelete = ref(false)
+const featuring = ref<string | null>(null)
 
 const statusItems = [
   { label: 'Todos', value: 'todos' },
@@ -59,6 +60,22 @@ async function removeProduct() {
     error('Erro ao apagar', err)
   } finally {
     loadingDelete.value = false
+  }
+}
+
+async function selectFeaturedProduct(product: ProductDTO) {
+  if (product.featured || featuring.value) return
+
+  featuring.value = product.id
+
+  try {
+    await $fetch(`/api/admin/products/${product.id}/featured`, { method: 'PUT' })
+    success('Destaque atualizado', `${product.name} agora aparece no topo da home.`)
+    await refresh()
+  } catch (err: any) {
+    error('Erro ao destacar', err)
+  } finally {
+    featuring.value = null
   }
 }
 </script>
@@ -136,12 +153,24 @@ async function removeProduct() {
             <td class="px-4 text-right">
               <UDropdownMenu
                 :items="[[
+                  {
+                    label: product.featured ? 'Destaque atual' : 'Selecionar destaque',
+                    icon: 'i-lucide-star',
+                    disabled: product.featured || Boolean(featuring),
+                    onSelect: () => selectFeaturedProduct(product)
+                  },
                   { label: 'Editar', icon: 'i-lucide-pencil', to: `/admin/produtos/${product.id}` },
                   { label: 'Ver publico', icon: 'i-lucide-external-link', to: `/produtos/${product.slug}`, target: '_blank' },
                   { label: 'Apagar', icon: 'i-lucide-trash', color: 'error', onSelect: () => deleting = product }
                 ]]"
               >
-                <UButton icon="i-lucide-more-horizontal" color="neutral" variant="ghost" aria-label="Acoes" />
+                <UButton
+                  icon="i-lucide-more-horizontal"
+                  color="neutral"
+                  variant="ghost"
+                  :loading="featuring === product.id"
+                  aria-label="Acoes"
+                />
               </UDropdownMenu>
             </td>
           </tr>

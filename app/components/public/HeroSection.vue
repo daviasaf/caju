@@ -7,7 +7,8 @@ const props = defineProps<{
 }>()
 
 const fallbackImage = '/uploads/seed/caju-editorial-fallback.webp'
-const heroImage = computed(() => props.settings?.heroImage || props.featuredProduct?.images?.[0]?.url || fallbackImage)
+const heroImage = computed(() => props.featuredProduct?.images?.[0]?.url || props.settings?.heroImage || fallbackImage)
+const productUrl = computed(() => props.featuredProduct ? `/produtos/${props.featuredProduct.slug}` : '')
 
 function useFallbackImage(event: Event) {
   const image = event.target as HTMLImageElement
@@ -41,7 +42,12 @@ function scrollToProducts() {
       </div>
     </div>
 
-    <figure class="caju-card overflow-hidden rounded-xl p-2">
+    <NuxtLink
+      v-if="featuredProduct"
+      :to="productUrl"
+      class="caju-card block overflow-hidden rounded-xl p-2 transition hover:border-black/30"
+      aria-label="Ver produto destacado"
+    >
       <img
         :src="heroImage"
         alt="Produto CAJU em destaque"
@@ -55,9 +61,24 @@ function scrollToProducts() {
             {{ featuredProduct?.name || 'CAJU autoral' }}
           </strong>
         </div>
-        <button type="button" class="caju-button caju-button-outline shrink-0 px-3" aria-label="Ver produtos" @click="scrollToProducts">
+        <span class="caju-button caju-button-outline shrink-0 px-3" aria-hidden="true">
           <UIcon name="i-lucide-arrow-up-right" class="h-5 w-5" />
-        </button>
+        </span>
+      </figcaption>
+    </NuxtLink>
+
+    <figure v-else class="caju-card overflow-hidden rounded-xl p-2">
+      <img
+        :src="heroImage"
+        alt="Produto CAJU em destaque"
+        class="aspect-[16/11] w-full rounded-lg bg-white object-cover sm:aspect-[4/3] lg:aspect-[4/5] lg:max-h-[520px]"
+        @error="useFallbackImage"
+      >
+      <figcaption class="flex items-center justify-between gap-4 px-2 py-2.5">
+        <div class="min-w-0">
+          <p class="text-xs font-black uppercase text-[var(--caju-muted)]">Destaque</p>
+          <strong class="mt-1 block truncate text-base font-black">CAJU autoral</strong>
+        </div>
       </figcaption>
     </figure>
   </section>

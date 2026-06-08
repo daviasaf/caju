@@ -39,8 +39,8 @@ const featuredProduct = computed(() => {
   const items = allProducts.value || []
 
   return (
-    items.find((item) => item.id === settings.value?.featuredProductId) ||
     items.find((item) => item.featured) ||
+    items.find((item) => item.id === settings.value?.featuredProductId) ||
     items[0] ||
     null
   )

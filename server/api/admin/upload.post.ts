@@ -59,15 +59,15 @@ export default defineEventHandler(async (event) => {
   const file = form?.find((item) => item.name === 'file')
 
   if (!file?.data || !file.type) {
-    throw createError({ statusCode: 400, statusMessage: 'Arquivo não enviado.' })
+    throw createError({ statusCode: 400, statusMessage: 'Arquivo nao enviado.' })
   }
 
   if (!ALLOWED.includes(file.type)) {
-    throw createError({ statusCode: 400, statusMessage: 'Use JPG, PNG ou WebP.' })
+    throw createError({ statusCode: 400, statusMessage: 'Formato de imagem invalido.' })
   }
 
   if (file.data.byteLength > MAX_SIZE) {
-    throw createError({ statusCode: 400, statusMessage: 'Máximo de 5MB.' })
+    throw createError({ statusCode: 400, statusMessage: 'Imagem muito grande.' })
   }
 
   const optimized = await sharp(file.data)

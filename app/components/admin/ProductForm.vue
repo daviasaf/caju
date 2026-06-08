@@ -17,6 +17,7 @@ const join = (items?: string[]) => (items || []).join(', ')
 const arr = (value: string) => value.split(',').map((item) => item.trim()).filter(Boolean)
 const isBlank = (value: unknown) => value === '' || value === null || value === undefined
 const nullableSelect = (value: string) => value === NONE_VALUE ? null : value
+const productImages = () => props.product?.images?.map((image) => ({ url: image.url, color: image.color || null })) || []
 
 const slugify = (value: string) => value
   .normalize('NFD')
@@ -41,7 +42,7 @@ const state = reactive({
   promotionalPrice: props.product?.promotionalPrice ?? null as number | null,
   categoryId: props.product?.categoryId || NONE_VALUE,
   collectionId: props.product?.collectionId || NONE_VALUE,
-  images: props.product?.images?.map((image) => image.url) || [] as string[],
+  images: productImages(),
   sizesText: join(props.product?.sizes),
   colorsText: join(props.product?.colors),
   materialsText: join(props.product?.materials),
@@ -62,9 +63,18 @@ const collectionItems = computed(() => [
   ...(collections.value || []).map((item) => ({ label: item.name, value: item.id }))
 ])
 
+const colorOptions = computed(() => arr(state.colorsText))
+
 watch(() => state.name, (value) => {
   state.slug = slugify(value)
 }, { immediate: true })
+
+watch(colorOptions, (colors) => {
+  state.images = state.images.map((image: any) => {
+    const item = typeof image === 'string' ? { url: image, color: null } : image
+    return item.color && !colors.includes(item.color) ? { ...item, color: null } : item
+  })
+})
 
 async function submit() {
   loading.value = true
@@ -80,7 +90,9 @@ async function submit() {
       promotionalPrice: isBlank(state.promotionalPrice) ? null : Number(state.promotionalPrice),
       categoryId: nullableSelect(state.categoryId),
       collectionId: nullableSelect(state.collectionId),
-      images: state.images,
+      images: state.images.map((image: any) => typeof image === 'string'
+        ? { url: image, color: null }
+        : { url: image.url, color: image.color || null }),
       sizes: arr(state.sizesText),
       colors: arr(state.colorsText),
       materials: arr(state.materialsText),
@@ -154,7 +166,7 @@ async function submit() {
         <template #header>
           <strong class="text-xl font-black">Imagens</strong>
         </template>
-        <AdminImageUploader v-model="state.images" />
+        <AdminImageUploader v-model="state.images" :colors="colorOptions" object-mode />
       </UCard>
     </div>
 
@@ -208,7 +220,6 @@ async function submit() {
       <UCard>
         <div class="space-y-4">
           <UCheckbox v-model="state.active" label="Produto ativo" />
-          <UCheckbox v-model="state.featured" label="Destaque na home" />
           <UButton type="submit" block :loading="loading" icon="i-lucide-save">
             Salvar produto
           </UButton>

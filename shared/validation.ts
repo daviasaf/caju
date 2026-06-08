@@ -22,6 +22,13 @@ const order = z.preprocess(
 
 const optionalText = z.string().optional().nullable()
 const stringList = z.array(z.string().trim().min(1)).default([])
+const productImageInput = z.union([
+  z.string().trim().min(1).transform((url) => ({ url, color: null as string | null })),
+  z.object({
+    url: z.string().trim().min(1),
+    color: optionalText
+  }).transform((image) => ({ url: image.url, color: image.color?.trim() || null }))
+])
 
 export const loginSchema = z.object({
   password: z.string().min(1, 'Digite a senha do admin.')
@@ -36,7 +43,7 @@ export const productSchema = z.object({
   promotionalPrice: optionalMoney,
   categoryId: optionalText,
   collectionId: optionalText,
-  images: stringList,
+  images: z.array(productImageInput).default([]),
   sizes: stringList,
   colors: stringList,
   materials: stringList,

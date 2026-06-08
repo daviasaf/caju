@@ -56,11 +56,6 @@ const images = computed({
   set: (value: string[]) => { state.heroImage = value[0] || '' }
 })
 
-const productItems = computed(() => [
-  { label: 'Nenhum', value: NONE_VALUE },
-  ...(products.value || []).map((item) => ({ label: item.name, value: item.id }))
-])
-
 const collectionItems = computed(() => [
   { label: 'Nenhuma', value: NONE_VALUE },
   ...(collections.value || []).map((item) => ({ label: item.name, value: item.id }))
@@ -152,9 +147,6 @@ async function submit() {
             <strong class="text-xl font-black tracking-[-0.05em]">Destaques da home</strong>
           </template>
           <div class="grid gap-4">
-            <UFormField label="Produto destaque" name="featuredProductId">
-              <USelect v-model="state.featuredProductId" class="w-full" :items="productItems" />
-            </UFormField>
             <UFormField label="Coleção destaque" name="featuredCollectionId">
               <USelect v-model="state.featuredCollectionId" class="w-full" :items="collectionItems" />
             </UFormField>

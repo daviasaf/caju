@@ -11,6 +11,7 @@ export default defineEventHandler(async (event) => {
   const data = productSchema.parse(await readBody(event))
   const baseSlug = createSlug(data.slug || data.name)
   const slug = await uniqueSlug(baseSlug || data.name, async (candidate) => Boolean(await prisma.product.findUnique({ where: { slug: candidate } })))
+  const images = data.images.map((image, order) => ({ url: image.url, color: image.color || null, alt: data.name, order }))
 
   const product = await prisma.product.create({
     data: {
@@ -18,7 +19,7 @@ export default defineEventHandler(async (event) => {
       slug,
       categoryId: data.categoryId || null,
       collectionId: data.collectionId || null,
-      images: { create: data.images.map((url, order) => ({ url, alt: data.name, order })) }
+      images: { create: images }
     },
     include: { images: true, category: true, collection: true }
   })

@@ -23,12 +23,17 @@ const finalPrice = computed(() => product.value?.promotionalPrice || product.val
 const gallery = computed(() => product.value?.images?.length ? product.value.images : [{ url: fallbackImage, alt: product.value?.name || 'Produto CAJU' }])
 const maxQuantity = computed(() => product.value?.stock && product.value.stock > 0 ? product.value.stock : 99)
 
+function imageForColor(color: string) {
+  if (!color) return null
+  return product.value?.images?.find((image) => image.color === color) || null
+}
+
 watch(
   product,
   (nextProduct) => {
-    selectedImage.value = nextProduct?.images?.[0]?.url || fallbackImage
     selectedSize.value = nextProduct?.sizes?.[0] || ''
     selectedColor.value = nextProduct?.colors?.[0] || ''
+    selectedImage.value = imageForColor(selectedColor.value)?.url || nextProduct?.images?.[0]?.url || fallbackImage
     quantity.value = 1
   },
   { immediate: true }
@@ -46,6 +51,18 @@ function setQuantity(value: number) {
 
 function onQuantityInput(event: Event) {
   setQuantity(Number((event.target as HTMLInputElement).value))
+}
+
+function selectGalleryImage(image: { url: string, color?: string | null }) {
+  selectedImage.value = image.url
+  if (image.color) selectedColor.value = image.color
+}
+
+function selectColor(color: string) {
+  selectedColor.value = color
+
+  const matchedImage = imageForColor(color)
+  if (matchedImage) selectedImage.value = matchedImage.url
 }
 
 async function goHome() {
@@ -89,7 +106,7 @@ useSeoMeta({
 <template>
   <div v-if="product" class="page-shell py-4 sm:py-8">
     <div class="mb-4">
-      <button type="button" class="inline-flex items-center gap-2 text-sm font-black text-black/65" @click="goHome">
+      <button type="button" class="inline-flex cursor-pointer items-center gap-2 text-sm font-black text-black/65" @click="goHome">
         <UIcon name="i-lucide-arrow-left" class="h-4 w-4" />
         Voltar
       </button>
@@ -110,10 +127,10 @@ useSeoMeta({
           <button
             v-for="image in gallery"
             :key="image.url"
-            class="h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 bg-white sm:h-20 sm:w-20"
+            class="h-16 w-16 shrink-0 cursor-pointer overflow-hidden rounded-lg border-2 bg-white sm:h-20 sm:w-20"
             :class="selectedImage === image.url ? 'border-[var(--caju-ink)]' : 'border-transparent opacity-70'"
             type="button"
-            @click="selectedImage = image.url"
+            @click="selectGalleryImage(image)"
           >
             <img :src="image.url" :alt="image.alt || product.name" class="h-full w-full object-cover" @error="useFallbackImage">
           </button>
@@ -140,7 +157,7 @@ useSeoMeta({
                   v-for="sizeOption in product.sizes"
                   :key="sizeOption"
                   type="button"
-                  class="rounded-lg border px-2.5 py-1.5 text-xs font-black sm:px-3 sm:py-2 sm:text-sm"
+                  class="cursor-pointer rounded-lg border px-2.5 py-1.5 text-xs font-black sm:px-3 sm:py-2 sm:text-sm"
                   :class="selectedSize === sizeOption ? 'border-[var(--caju-yellow)] bg-[var(--caju-yellow)] text-black' : 'border-[color:var(--caju-border)] bg-white text-black/70'"
                   @click="selectedSize = sizeOption"
                 >
@@ -156,9 +173,9 @@ useSeoMeta({
                   v-for="colorOption in product.colors"
                   :key="colorOption"
                   type="button"
-                  class="rounded-lg border px-2.5 py-1.5 text-xs font-black sm:px-3 sm:py-2 sm:text-sm"
+                  class="cursor-pointer rounded-lg border px-2.5 py-1.5 text-xs font-black sm:px-3 sm:py-2 sm:text-sm"
                   :class="selectedColor === colorOption ? 'border-[var(--caju-yellow)] bg-[var(--caju-yellow)] text-black' : 'border-[color:var(--caju-border)] bg-white text-black/70'"
-                  @click="selectedColor = colorOption"
+                  @click="selectColor(colorOption)"
                 >
                   {{ colorOption }}
                 </button>
@@ -168,7 +185,7 @@ useSeoMeta({
             <div>
               <p class="mb-2 text-xs font-black sm:text-sm">Quantidade</p>
               <div class="inline-grid grid-cols-[2.25rem_3.25rem_2.25rem] overflow-hidden rounded-lg border border-[color:var(--caju-border)] bg-white">
-                <button type="button" class="grid place-items-center border-r border-[color:var(--caju-border)]" aria-label="Diminuir quantidade" @click="setQuantity(quantity - 1)">
+                <button type="button" class="grid cursor-pointer place-items-center border-r border-[color:var(--caju-border)]" aria-label="Diminuir quantidade" @click="setQuantity(quantity - 1)">
                   <UIcon name="i-lucide-minus" class="h-4 w-4" />
                 </button>
                 <input
@@ -179,7 +196,7 @@ useSeoMeta({
                   class="h-10 w-full bg-white text-center text-sm font-black outline-none"
                   @input="onQuantityInput"
                 >
-                <button type="button" class="grid place-items-center border-l border-[color:var(--caju-border)]" aria-label="Aumentar quantidade" @click="setQuantity(quantity + 1)">
+                <button type="button" class="grid cursor-pointer place-items-center border-l border-[color:var(--caju-border)]" aria-label="Aumentar quantidade" @click="setQuantity(quantity + 1)">
                   <UIcon name="i-lucide-plus" class="h-4 w-4" />
                 </button>
               </div>

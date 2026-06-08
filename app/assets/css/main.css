@@ -39,6 +39,14 @@ body {
 a { color: inherit; text-decoration: none; }
 img { display: block; max-width: 100%; }
 
+:where(a[href], button:not(:disabled), [role="button"], label:has(input[type="file"]), select, summary, [data-clickable="true"]) {
+  cursor: pointer;
+}
+
+:where(button:disabled, [aria-disabled="true"]) {
+  cursor: not-allowed;
+}
+
 .page-shell {
   width: min(1180px, calc(100% - 2rem));
   margin-inline: auto;
