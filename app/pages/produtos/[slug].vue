@@ -2,9 +2,8 @@
 import type { ProductDTO } from '~~/shared/types'
 
 const route = useRoute()
-const config = useRuntimeConfig()
 const { formatMoney } = useMoney()
-const { ogLogoUrl } = usePublicUrl()
+const { ogLogoUrl, toPublicUrl } = usePublicUrl()
 
 const { data, error } = await useFetch<{ product: ProductDTO, related: ProductDTO[] }>(`/api/products/${route.params.slug}`)
 
@@ -19,10 +18,17 @@ const selectedSize = ref('')
 const selectedColor = ref('')
 const quantity = ref(1)
 const buying = ref(false)
+const confirmPurchaseOpen = ref(false)
+const purchaseError = ref('')
 
 const finalPrice = computed(() => product.value?.promotionalPrice || product.value?.price || 0)
 const gallery = computed(() => product.value?.images?.length ? product.value.images : [{ url: fallbackImage, alt: product.value?.name || 'Produto CAJU' }])
 const maxQuantity = computed(() => product.value?.stock && product.value.stock > 0 ? product.value.stock : 99)
+const publicProductUrl = computed(() => {
+  if (!product.value) return ''
+
+  return toPublicUrl(`/produtos/${product.value.slug}`)
+})
 
 function imageForColor(color: string) {
   if (!color) return null
@@ -70,10 +76,18 @@ async function goHome() {
   await navigateTo('/')
 }
 
+function openPurchaseConfirm() {
+  if (!product.value) return
+
+  purchaseError.value = ''
+  confirmPurchaseOpen.value = true
+}
+
 async function buyOnWhatsApp() {
   if (!product.value) return
 
   buying.value = true
+  purchaseError.value = ''
 
   try {
     const result = await $fetch<{ url: string }>('/api/whatsapp-url', {
@@ -84,14 +98,20 @@ async function buyOnWhatsApp() {
         color: selectedColor.value,
         quantity: Number(quantity.value || 1),
         price: finalPrice.value,
-        url: `${config.public.siteUrl}/produtos/${product.value.slug}`
+        url: publicProductUrl.value
       }
     })
 
-    await navigateTo(result.url, {
-      external: true,
-      open: { target: '_blank' }
-    })
+    confirmPurchaseOpen.value = false
+
+    if (import.meta.client) {
+      window.location.href = result.url
+      return
+    }
+
+    await navigateTo(result.url, { external: true })
+  } catch (error: any) {
+    purchaseError.value = error?.data?.message || error?.statusMessage || 'Nao foi possivel abrir o WhatsApp. Confira o numero nas configuracoes.'
   } finally {
     buying.value = false
   }
@@ -215,7 +235,7 @@ useSeoMeta({
             :loading="buying"
             class="mt-4 font-black"
             icon="i-lucide-message-circle"
-            @click="buyOnWhatsApp"
+            @click="openPurchaseConfirm"
           >
             Comprar pelo WhatsApp
           </UButton>
@@ -240,5 +260,52 @@ useSeoMeta({
       </div>
       <PublicProductGrid :products="data.related" />
     </section>
+
+    <UModal :open="confirmPurchaseOpen" @update:open="confirmPurchaseOpen = $event">
+      <template #content>
+        <div class="space-y-5 p-5 sm:p-6">
+          <div>
+            <p class="caju-kicker">WhatsApp</p>
+            <h2 class="mt-1 text-2xl font-black">Confirmar pedido</h2>
+            <p class="mt-2 text-sm leading-relaxed text-black/58">
+              Vou abrir o WhatsApp com os detalhes abaixo para voce finalizar a compra com a CAJU.
+            </p>
+          </div>
+
+          <div class="rounded-xl border border-[color:var(--caju-border)] bg-[#fffaf3] p-4">
+            <strong class="block text-lg font-black">{{ product.name }}</strong>
+            <dl class="mt-3 grid gap-2 text-sm text-black/64 sm:grid-cols-2">
+              <div v-if="selectedSize">
+                <dt class="text-xs font-black uppercase text-black/42">Tamanho</dt>
+                <dd class="font-bold text-black">{{ selectedSize }}</dd>
+              </div>
+              <div v-if="selectedColor">
+                <dt class="text-xs font-black uppercase text-black/42">Cor</dt>
+                <dd class="font-bold text-black">{{ selectedColor }}</dd>
+              </div>
+              <div>
+                <dt class="text-xs font-black uppercase text-black/42">Quantidade</dt>
+                <dd class="font-bold text-black">{{ quantity }}</dd>
+              </div>
+              <div>
+                <dt class="text-xs font-black uppercase text-black/42">Valor</dt>
+                <dd class="font-bold text-black">{{ formatMoney(finalPrice) }}</dd>
+              </div>
+            </dl>
+          </div>
+
+          <UAlert v-if="purchaseError" color="error" variant="soft" icon="i-lucide-circle-alert" :description="purchaseError" />
+
+          <div class="grid gap-2 sm:grid-cols-2">
+            <UButton color="neutral" variant="soft" size="lg" block :disabled="buying" @click="confirmPurchaseOpen = false">
+              Cancelar
+            </UButton>
+            <UButton size="lg" block icon="i-lucide-message-circle" :loading="buying" @click="buyOnWhatsApp">
+              Abrir WhatsApp
+            </UButton>
+          </div>
+        </div>
+      </template>
+    </UModal>
   </div>
 </template>
