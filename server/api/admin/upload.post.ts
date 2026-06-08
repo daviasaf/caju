@@ -9,6 +9,20 @@ const ALLOWED = ['image/jpeg', 'image/png', 'image/webp']
 const MAX_SIZE = 5 * 1024 * 1024
 type BlobAccess = 'public' | 'private'
 
+function resolveUploadProvider(config: ReturnType<typeof useRuntimeConfig>) {
+  const provider = config.uploadProvider === 'blob' ? 'vercel-blob' : config.uploadProvider
+
+  if (
+    provider === 'local'
+    && process.env.VERCEL
+    && (config.blobStoreId || config.blobReadWriteToken)
+  ) {
+    return 'vercel-blob'
+  }
+
+  return provider
+}
+
 function getBlobPathname(blob: { pathname?: string, url: string }) {
   if (blob.pathname) return blob.pathname
 
@@ -64,7 +78,7 @@ export default defineEventHandler(async (event) => {
 
   const filename = `products/${Date.now()}-${randomUUID()}.webp`
 
-  const uploadProvider = config.uploadProvider === 'blob' ? 'vercel-blob' : config.uploadProvider
+  const uploadProvider = resolveUploadProvider(config)
 
   if (uploadProvider === 'vercel-blob') {
     const preferredAccess: BlobAccess = config.blobAccess === 'private' ? 'private' : 'public'
