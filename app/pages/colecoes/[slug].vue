@@ -2,6 +2,7 @@
 import type { ProductDTO, CollectionDTO } from '~~/shared/types'
 
 const route = useRoute()
+const { ogLogoUrl } = usePublicUrl()
 const { data, error } = await useFetch<{ collection: CollectionDTO, products: ProductDTO[] }>(`/api/collections/${route.params.slug}`)
 
 if (error.value) {
@@ -11,7 +12,8 @@ if (error.value) {
 useSeoMeta({
   title: () => `${data.value?.collection?.name || 'Coleção'} - CAJU`,
   description: () => data.value?.collection?.description || 'Coleção autoral da CAJU.',
-  ogImage: () => data.value?.collection?.image
+  ogImage: ogLogoUrl,
+  twitterImage: ogLogoUrl
 })
 </script>
 

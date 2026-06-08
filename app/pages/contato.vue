@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import type { StoreSettingsDTO } from '~~/shared/types'
 
+const { ogLogoUrl } = usePublicUrl()
 const { data: settings } = await useFetch<StoreSettingsDTO>('/api/settings')
 const instagramHref = computed(() => settings.value?.instagram || '')
 
 useSeoMeta({
   title: 'Contato - CAJU',
-  description: 'Fale com a CAJU pelo Instagram ou WhatsApp.'
+  description: 'Fale com a CAJU pelo Instagram ou WhatsApp.',
+  ogImage: ogLogoUrl,
+  twitterImage: ogLogoUrl
 })
 
 async function goHome() {

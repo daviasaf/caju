@@ -3,6 +3,7 @@ import type { ProductDTO, CategoryDTO, CollectionDTO, StoreSettingsDTO } from '~
 
 const route = useRoute()
 const router = useRouter()
+const { ogLogoUrl } = usePublicUrl()
 const ALL_VALUE = '__all__'
 
 const filtersOpen = ref(false)
@@ -116,7 +117,8 @@ watch(
 useSeoMeta({
   title: () => settings.value?.seoTitle || 'CAJU - Vista Quissama',
   description: () => settings.value?.seoDescription || 'Produtos autorais inspirados em Quissama, praia, natureza e cultura local.',
-  ogImage: () => settings.value?.heroImage || featuredProduct.value?.images?.[0]?.url
+  ogImage: ogLogoUrl,
+  twitterImage: ogLogoUrl
 })
 </script>
 

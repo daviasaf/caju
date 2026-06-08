@@ -4,6 +4,7 @@ import type { ProductDTO } from '~~/shared/types'
 const route = useRoute()
 const config = useRuntimeConfig()
 const { formatMoney } = useMoney()
+const { ogLogoUrl } = usePublicUrl()
 
 const { data, error } = await useFetch<{ product: ProductDTO, related: ProductDTO[] }>(`/api/products/${route.params.slug}`)
 
@@ -99,7 +100,8 @@ async function buyOnWhatsApp() {
 useSeoMeta({
   title: () => product.value?.seoTitle || `${product.value?.name || 'Produto'} - CAJU`,
   description: () => product.value?.seoDescription || product.value?.shortDescription || 'Produto autoral da CAJU.',
-  ogImage: () => product.value?.images?.[0]?.url
+  ogImage: ogLogoUrl,
+  twitterImage: ogLogoUrl
 })
 </script>
 

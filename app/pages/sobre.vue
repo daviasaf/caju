@@ -1,3 +1,14 @@
+<script setup lang="ts">
+const { ogLogoUrl } = usePublicUrl()
+
+useSeoMeta({
+  title: 'Sobre - CAJU',
+  description: 'Conheca a CAJU, marca autoral feita em Quissama - RJ.',
+  ogImage: ogLogoUrl,
+  twitterImage: ogLogoUrl
+})
+</script>
+
 <template>
   <div class="page-shell py-16">
     <div class="grid gap-10 lg:grid-cols-[.9fr_1.1fr] lg:items-center">
